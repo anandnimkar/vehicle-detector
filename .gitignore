@@ -1,3 +1,5 @@
 .ipynb_checkpoints/
 dataset/
 saved_models/
+__pycache__/
+*.pyc
