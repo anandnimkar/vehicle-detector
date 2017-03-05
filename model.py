@@ -81,7 +81,7 @@ def pipeline_v1(vehicles, non_vehicles, params=None, save=False):
     
     if save:
         now = datetime.datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%SZ')
-        pickle_fname = ('./saved_models/{}|test_acc={}|train_samples={}|test_samples={}.pickle'
+        pickle_fname = ('./saved_models/{}|test_acc={}|train_samples={}|test_samples={}.p'
                         .format(now, acc, len(y_train), len(y_test)))
         with open(pickle_fname, 'wb') as f:
             pickle.dump({
