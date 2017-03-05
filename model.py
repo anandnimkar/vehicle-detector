@@ -7,7 +7,7 @@ import cv2
 from sklearn.model_selection import train_test_split
 from sklearn.svm import LinearSVC
 from sklearn.preprocessing import StandardScaler
-from feature import extract_features
+from features import extract_features
 
 
 def pipeline_v1(vehicles, non_vehicles, params=None, save=False):
@@ -16,7 +16,7 @@ def pipeline_v1(vehicles, non_vehicles, params=None, save=False):
     """
     params = params or {
         # color space
-        'cspace': 'YCrCb', # Can be BGR, HSV, LUV, HLS, YUV, or YCrCb
+        'cspace': 'HSV', # Can be BGR, HSV, LUV, HLS, YUV, or YCrCb
         
         # spatial binning params
         'spatial_size': (24, 24),

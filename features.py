@@ -72,8 +72,8 @@ def extract_features(imgs, cspace='BGR', spatial_size=(32,32), hist_bins=32, his
         # Call get_hog_features() with vis=False, feature_vec=True
         if hog_channel == 'ALL':
             hog_features = []
-            for channel in range(feature_image.shape[2]):
-                hog_features.append(get_hog_features(feature_image[:,:,channel], orient, pix_per_cell, cell_per_block, 
+            for channel in range(image.shape[2]):
+                hog_features.append(get_hog_features(image[:,:,channel], orient, pix_per_cell, cell_per_block, 
                                                      vis=False, feature_vec=True))
             hog_features = np.ravel(hog_features)        
         else:
