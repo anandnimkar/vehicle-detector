@@ -4,108 +4,16 @@ import glob
 import pickle
 import numpy as np
 import cv2
-import matplotlib.pyplot as plt
-from skimage.feature import hog
 from sklearn.model_selection import train_test_split
 from sklearn.svm import LinearSVC
 from sklearn.preprocessing import StandardScaler
+from feature import extract_features
 
-
-# Load Data
-
-vehicle_image_fnames = glob.glob('./dataset/vehicles/**/*.png')
-non_vehicle_image_fnames = glob.glob('./dataset/non-vehicles/**/*.png')
-print('Number of vehicle images: {}'.format(len(vehicle_image_fnames)))
-print('Number of non-vehicle images: {}'.format(len(non_vehicle_image_fnames)))
-
-
-# Feature Extraction using Color Space Transforms, Spatial Binning, Color Histograms, and Histogram of Oriented Gradients (HOG)
-
-def bin_spatial(img, size=(32, 32)):
-    color1 = cv2.resize(img[:,:,0], size).ravel()
-    color2 = cv2.resize(img[:,:,1], size).ravel()
-    color3 = cv2.resize(img[:,:,2], size).ravel()
-    return np.hstack((color1, color2, color3))
-                        
-def color_hist(img, nbins=32, bins_range=(0, 256)):
-    # Compute the histogram of the color channels separately
-    channel1_hist = np.histogram(img[:,:,0], bins=nbins, range=bins_range)
-    channel2_hist = np.histogram(img[:,:,1], bins=nbins, range=bins_range)
-    channel3_hist = np.histogram(img[:,:,2], bins=nbins, range=bins_range)
-
-    # Concatenate the histograms into a single feature vector
-    hist_features = np.concatenate((channel1_hist[0], channel2_hist[0], channel3_hist[0]))
-    
-    # Return the individual histograms, bin_centers and feature vector
-    return hist_features
-
-def get_hog_features(img, orient, pix_per_cell, cell_per_block, 
-                        vis=False, feature_vec=True):
-    # Call with two outputs if vis==True
-    if vis == True:
-        features, hog_image = hog(img, orientations=orient, 
-                                  pixels_per_cell=(pix_per_cell, pix_per_cell),
-                                  cells_per_block=(cell_per_block, cell_per_block), 
-                                  transform_sqrt=False, 
-                                  visualise=vis, feature_vector=feature_vec)
-        return features, hog_image
-    
-    # Otherwise call with one output
-    else:      
-        features = hog(img, orientations=orient, 
-                       pixels_per_cell=(pix_per_cell, pix_per_cell),
-                       cells_per_block=(cell_per_block, cell_per_block), 
-                       transform_sqrt=False, 
-                       visualise=vis, feature_vector=feature_vec)
-        return features
-
-def extract_features(imgs, cspace='BGR', spatial_size=(32,32), hist_bins=32, hist_range=(0, 256), 
-                     orient=9, pix_per_cell=8, cell_per_block=2, hog_channel='ALL'):
-    # Create a list to append feature vectors to
-    features = []
-    
-    # Iterate through the list of images
-    for file in imgs:
-        
-        # Read in each one by one
-        image = cv2.imread(file)
-        
-        # apply color conversion if other than 'BGR'
-        if cspace != 'BGR' and cspace in ['HSV', 'LUV', 'HLS', 'YUV', 'YCrCb']:
-            feature_image = cv2.cvtColor(image, eval('cv2.COLOR_BGR2' + cspace))
-        elif cspace == 'BGR':
-            feature_image = np.copy(image)
-        else:
-            raise ValueError("cspace must be one of 'BGR', 'HSV', 'LUV', 'HLS', 'YUV', or 'YCrCb'")
-            
-        # Apply bin_spatial() to get spatial color features
-        bs = bin_spatial(image, size=spatial_size)
-        
-        # Apply color_hist() to get color histogram features
-        cs = color_hist(image, nbins=hist_bins, bins_range=hist_range)
-                                    
-        # Call get_hog_features() with vis=False, feature_vec=True
-        if hog_channel == 'ALL':
-            hog_features = []
-            for channel in range(feature_image.shape[2]):
-                hog_features.append(get_hog_features(feature_image[:,:,channel], orient, pix_per_cell, cell_per_block, 
-                                                     vis=False, feature_vec=True))
-            hog_features = np.ravel(hog_features)        
-        else:
-            hog_features = get_hog_features(feature_image[:,:,hog_channel], orient, pix_per_cell, cell_per_block, 
-                                            vis=False, feature_vec=True)
-        
-        # Append the new feature vector to the features list
-        features.append(np.concatenate((bs, cs, hog_features)))
-    
-    # Return list of feature vectors
-    return features
-
-
-# Training a Support Vector Machine (SVM) Classifier
 
 def pipeline_v1(vehicles, non_vehicles, params=None, save=False):
-
+    """
+    This function performs feature engineering, trains a Linear SVC, and optionally saves the fitted model.
+    """
     params = params or {
         # color space
         'cspace': 'YCrCb', # Can be BGR, HSV, LUV, HLS, YUV, or YCrCb
@@ -186,6 +94,12 @@ def pipeline_v1(vehicles, non_vehicles, params=None, save=False):
                 'params': params
             }, f, pickle.HIGHEST_PROTOCOL)
             print('Saved model and params to {}'.format(pickle_fname))
+
+# Load the data
+vehicle_image_fnames = glob.glob('./dataset/vehicles/**/*.png')
+non_vehicle_image_fnames = glob.glob('./dataset/non-vehicles/**/*.png')
+print('Number of vehicle images: {}'.format(len(vehicle_image_fnames)))
+print('Number of non-vehicle images: {}'.format(len(non_vehicle_image_fnames)))            
 
 # Train, test, and save model
 pipeline_v1(vehicle_image_fnames, non_vehicle_image_fnames, save=True)
