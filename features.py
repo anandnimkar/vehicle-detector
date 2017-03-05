@@ -1,17 +1,18 @@
 import numpy as np
 import cv2
+import matplotlib.image as mpimg
 from skimage.feature import hog
 
 # Feature Extraction using Color Space Transforms, Spatial Binning, Color Histograms, and Histogram of Oriented Gradients (HOG)
 
 def convert_cspace(img, cspace):
-    # apply color conversion if other than 'BGR'
-    if cspace != 'BGR' and cspace in ['HSV', 'LUV', 'HLS', 'YUV', 'YCrCb']:
-        return cv2.cvtColor(img, eval('cv2.COLOR_BGR2' + cspace))
-    elif cspace == 'BGR':
+    # apply color conversion if other than 'RGB'
+    if cspace != 'RGB' and cspace in ['HSV', 'LUV', 'HLS', 'YUV', 'YCrCb']:
+        return cv2.cvtColor(img, eval('cv2.COLOR_RGB2' + cspace))
+    elif cspace == 'RGB':
         return np.copy(img)
     else:
-        raise ValueError("cspace must be one of 'BGR', 'HSV', 'LUV', 'HLS', 'YUV', or 'YCrCb'")
+        raise ValueError("cspace must be one of 'RGB', 'HSV', 'LUV', 'HLS', 'YUV', or 'YCrCb'")
 
 def bin_spatial(img, size=(32, 32)):
     color1 = cv2.resize(img[:,:,0], size).ravel()
@@ -51,7 +52,7 @@ def get_hog_features(img, orient, pix_per_cell, cell_per_block, vis=False, featu
         return features
     
 
-def extract_features(imgs, cspace='BGR', spatial_size=(32,32), hist_bins=32, hist_range=(0, 256), 
+def extract_features(imgs, cspace='RGB', spatial_size=(32,32), hist_bins=32, hist_range=(0, 256), 
                      orient=9, pix_per_cell=8, cell_per_block=2, hog_channel='ALL'):
     # Create a list to append feature vectors to
     features = []
@@ -60,7 +61,7 @@ def extract_features(imgs, cspace='BGR', spatial_size=(32,32), hist_bins=32, his
     for f in imgs:
         
         # Read in each one by one and convert to the appropriate color space
-        image = cv2.imread(f)
+        image = cv2.cvtColor(cv2.imread(f), cv2.COLOR_BGR2RGB) # read in using cv2 to keep the 0 to 255 scaling for png images
         image = convert_cspace(image, cspace)
 
         # Apply bin_spatial() to get spatial color features

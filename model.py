@@ -16,7 +16,7 @@ def pipeline_v1(vehicles, non_vehicles, params=None, save=False):
     """
     params = params or {
         # color space
-        'cspace': 'YCrCb', # Can be BGR, HSV, LUV, HLS, YUV, or YCrCb
+        'cspace': 'YCrCb', # Can be RGB, HSV, LUV, HLS, YUV, or YCrCb
         
         # spatial binning params
         'spatial_size': (24, 24),
