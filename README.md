@@ -11,13 +11,13 @@ The goals / steps of this project are the following:
 
 [//]: # (Image References)
 [image1]: ./output_images/vehicle.png
-[image2]: ./examples/non_vehicle.png
-[image3]: ./examples/hog_visualization_vehicle.png
-[image4]: ./examples/hog_visualization_non_vehicle.png
-[image5]: ./examples/detection1.png
-[image6]: ./examples/detection2.png
-[image7]: ./examples/bboxes_and_heatmaps_1.png
-[image8]: ./examples/bboxes_and_heatmaps_2.png
+[image2]: ./output_images/non_vehicle.png
+[image3]: ./output_images/hog_visualization_vehicle.png
+[image4]: ./output_images/hog_visualization_non_vehicle.png
+[image5]: ./output_images/detection1.png
+[image6]: ./output_images/detection2.png
+[image7]: ./output_images/bboxes_and_heatmaps_1.png
+[image8]: ./output_images/bboxes_and_heatmaps_2.png
 [video1]: ./output_project_video.mp4
 
 ###Feature Extracting Using Color Space Modifications, Spatial Binning, Color Channel Histograms, and Histogram of Oriented Gradients (HOG)
